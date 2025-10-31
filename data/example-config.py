@@ -9,14 +9,6 @@ config = {
         # visit "https://www.themoviedb.org/settings/api" copy api key and insert below
         "tmdb_api": "",
 
-        # tvdb api key
-        # visit "https://www.thetvdb.com/dashboard/account/apikey" copy api key and insert below
-        "tvdb_api": "",
-
-        # visit "https://thetvdb.github.io/v4-api/#/Login/post_login" enter api key, generate token and insert token below
-        # the pin in the login form is not needed (don't modify), only enter your api key
-        "tvdb_token": "",
-
         # btn api key used to get details from btn
         "btn_api": "",
 
@@ -89,6 +81,9 @@ config = {
         # Some systems are slow to compile libtorrent shaders, which will cause the first screenshot to fail
         "ffmpeg_warmup": False,
 
+        # Set ffmpeg compression level for screenshots (0-9)
+        "ffmpeg_compression": "6",
+
         # Tonemap screenshots with the following settings (doesn't apply when using libplacebo)
         # See https://ayosec.github.io/ffmpeg-filters-docs/7.1/Filters/Video/tonemap.html
         "algorithm": "mobius",
@@ -147,11 +142,21 @@ config = {
         # Providing the option to add a header, in bbcode, above the screenshot section where supported
         "screenshot_header": "",
 
-        # Enable lossless PNG Compression (True/False)
-        "optimize_images": True,
-
         # Which client are you using.
         "default_torrent_client": "qbittorrent",
+
+        # Use this client for injection (aka actually adding the torrent for uploading)
+        "inject_torrent_client": "",
+
+        # A list of clients to search for torrents.
+        # eg: ['qbittorrent', 'qbittorrent_searching']
+        # will fallback to default_torrent_client if empty
+        "searching_client_list": [''],
+
+        # set true to skip automated client torrent searching
+        # this will search qbittorrent clients for matching torrents
+        # and use found torrent id's for existing hash and site searching
+        'skip_auto_torrent': False,
 
         # Play the bell sound effect when asking for confirmation
         "sfx_on_prompt": True,
@@ -200,11 +205,6 @@ config = {
 
         # set true to use argument overrides from data/templates/user-args.json
         "user_overrides": False,
-
-        # set true to skip automated client torrent searching
-        # this will search qbittorrent clients for matching torrents
-        # and use found torrent id's for existing hash and site searching
-        'skip_auto_torrent': False,
 
         # If there is no region/distributor ids specified, we can use existing torrents to check
         # This will use data from matching torrents in qBitTorrent/RuTorrent to find matching site ids
@@ -286,7 +286,7 @@ config = {
 
     "TRACKERS": {
         # Which trackers do you want to upload to?
-        # Available tracker: ACM, AITHER, AL, ANT, AR, ASC, AZ, BHD, BHDTV, BJS, BLU, BT, CBR, CZ, DC, DP, FF, FL, FNP, FRIKI, GPW, HDB, HDS, HDT, HHD, HUNO, ITT, LCD, LDU, LST, LT, MTV, NBL, OE, OTW, PHD, PT, PTER, PTP, PTS, PTT, R4E, RAS, RF, RTF, SAM, SHRI, SN, SP, SPD, STC, THR, TIK, TL, TTG, TVC, UHD, ULCX, UTP, YOINK, YUS
+        # Available tracker: ACM, AITHER, AL, ANT, AR, ASC, AZ, BHD, BHDTV, BJS, BLU, BT, CBR, CZ, DC, DP, EMUW, FF, FL, FNP, FRIKI, GPW, HDB, HDS, HDT, HHD, HUNO, IS, ITT, LCD, LDU, LST, LT, MTV, NBL, OE, OTW, PHD, PT, PTER, PTP, PTS, PTT, R4E, RAS, RF, RTF, SAM, SHRI, SN, SP, SPD, STC, THR, TIK, TL, TTG, TVC, UHD, ULCX, UTP, YOINK, YUS
         # Only add the trackers you want to upload to on a regular basis
         "default_trackers": "",
 
@@ -435,6 +435,14 @@ config = {
             # Send uploads to DP modq for staff approval
             "modq": False,
         },
+        "EMUW": {
+            # Instead of using the tracker acronym for folder name when sym/hard linking, you can use a custom name
+            "link_dir_name": "",
+            "api_key": "",
+            "anon": False,
+            # Use Spanish title instead of English title, if available
+            "use_spanish_title": False,
+        },
         "FF": {
             # Instead of using the tracker acronym for folder name when sym/hard linking, you can use a custom name
             "link_dir_name": "",
@@ -529,6 +537,14 @@ config = {
             "link_dir_name": "",
             "useAPI": False,
             "api_key": "",
+            "anon": False,
+        },
+        "IS": {
+            # for IS to work you need to export cookies from https://immortalseed.me/ using https://addons.mozilla.org/en-US/firefox/addon/export-cookies-txt/.
+            # cookies need to be in netscape format and need to be in data/cookies/IS.txt
+            # Instead of using the tracker acronym for folder name when sym/hard linking, you can use a custom name
+            "link_dir_name": "",
+            "announce_url": "https://immortalseed.me/announce.php?passkey=<PASSKEY>",
             "anon": False,
         },
         "ITT": {
@@ -781,12 +797,6 @@ config = {
             "announce_url": "https://tvchaosuk.com/announce/<PASSKEY>",
             "anon": False,
         },
-        "UHD": {
-            # Instead of using the tracker acronym for folder name when sym/hard linking, you can use a custom name
-            "link_dir_name": "",
-            "api_key": "",
-            "anon": False,
-        },
         "ULCX": {
             # Instead of using the tracker acronym for folder name when sym/hard linking, you can use a custom name
             "link_dir_name": "",
@@ -839,6 +849,11 @@ config = {
             "qbit_port": "8080",
             "qbit_user": "",
             "qbit_pass": "",
+            # List of trackers to activate "super-seed" (or "initial seeding") mode when adding the torrent.
+            # https://www.bittorrent.org/beps/bep_0016.html
+            # Super-seed mode is NOT recommended for general use.
+            # Super-seed mode is only recommended for initial seeding servers where bandwidth management is paramount.
+            "super_seed_trackers": [""],
             # Use the UA tracker acronym as a tag in qBitTorrent
             "use_tracker_as_tag": False,
             "qbit_tag": "",
@@ -867,6 +882,19 @@ config = {
 
             # Set to False to skip verify certificate for HTTPS connections; for instance, if the connection is using a self-signed certificate.
             # "VERIFY_WEBUI_CERTIFICATE": True,
+        },
+        "qbittorrent_searching": {
+            # an example of using a qBitTorrent client just for searching, when using another client for injection
+            "torrent_client": "qbit",
+            # qui reverse proxy url, see https://github.com/autobrr/qui#reverse-proxy-for-external-applications
+            # If using the qui reverse proxy, no other auth type needs to be set
+            "qui_proxy_url": "",
+            # enable_search to True will automatically try and find a suitable hash to save having to rehash when creating torrents
+            "enable_search": True,
+            "qbit_url": "http://127.0.0.1",
+            "qbit_port": "8080",
+            "qbit_user": "",
+            "qbit_pass": "",
         },
         "rtorrent": {
             "torrent_client": "rtorrent",

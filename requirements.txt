@@ -6,6 +6,7 @@ beautifulsoup4
 bencode.py
 cli-ui
 click
+cloudscraper
 deluge-client
 discord
 ffmpeg-python
@@ -22,7 +23,6 @@ pycountry
 pyimgbox
 pymediainfo==7.0.1
 pyotp
-pyoxipng
 pyparsebluray
 qbittorrent-api
 requests
@@ -31,5 +31,6 @@ tmdbsimple
 torf
 tqdm
 transmission_rpc
+tvdb-v4-official
 unidecode
 urllib3

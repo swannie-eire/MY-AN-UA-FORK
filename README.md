@@ -42,11 +42,12 @@ Better just to be on this fork and bug me about my bugs, rather than bugging som
 |BrasilJapão-Share|BJS|BrasilTracker|BT|
 |CapybaraBR|CBR|Cinematik|TIK|
 |DarkPeers|DP|DigitalCore|DC|
-|FearNoPeer|FNP|FileList|FL|
-|Friki|FRIKI|FunFile|FF|
-|GreatPosterWall|GPW|hawke-uno|HUNO|
-|HDBits|HDB|HD-Space|HDS|
-|HD-Torrents|HDT|HomieHelpDesk|HHD|
+|Emuwarez|EMUW|FearNoPeer|FNP|
+|FileList|FL|Friki|FRIKI|
+|FunFile|FF|GreatPosterWall|GPW|
+|hawke-uno|HUNO|HDBits|HDB|
+|HD-Space|HDS|HD-Torrents|HDT|
+|HomieHelpDesk|HHD|ImmortalSeed|IS|
 |ItaTorrents|ITT|LastDigitalUnderground|LDU|
 |Lat-Team|LT|Locadora|LCD|
 |LST|LST|MoreThanTV|MTV|
@@ -61,9 +62,9 @@ Better just to be on this fork and bug me about my bugs, rather than bugging som
 |SkipTheCommericals|STC|SpeedApp|SPD|
 |Swarmazon|SN|TorrentHR|THR|
 |TorrentLeech|TL|ToTheGlory|TTG|
-|TVChaosUK|TVC|UHDShare|UHD|
-|ULCX|ULCX|UTOPIA|UTP|
-|YOiNKED|YOINK|YUSCENE|YUS|
+|TVChaosUK|TVC|ULCX|ULCX|
+|UTOPIA|UTP|YOiNKED|YOINK|
+|YUSCENE|YUS|
 
 ## **Setup:**
    - **REQUIRES AT LEAST PYTHON 3.9 AND PIP3**
