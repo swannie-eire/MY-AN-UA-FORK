@@ -1,20 +1,18 @@
-import aiofiles
 import asyncio
+import aiofiles
 import cli_ui
 import httpx
 import json
 import os
 import re
 import sys
+import importlib
+import inspect
 
 from data.config import config
 from datetime import datetime, timedelta
 from src.cleanup import cleanup, reset_terminal
 from src.console import console
-
-import importlib
-import os
-import inspect
 
 tracker_dir = os.path.join(os.path.dirname(__file__), 'trackers')
 tracker_module_names = [
@@ -27,10 +25,8 @@ http_trackers = {}
 api_trackers = {}
 other_api_trackers = {}
 
-import inspect
-
 for mod_name in tracker_module_names:
-    if mod_name == 'AVISTAZ_NETWORK' or mod_name == 'UNIT3D_TEMPLATE' or mod_name == 'UNIT3D' :
+    if mod_name == 'AVISTAZ_NETWORK' or mod_name == 'UNIT3D_TEMPLATE' or mod_name == 'UNIT3D':
         continue  # Skip this module entirely
 
     full_mod_name = f'src.trackers.{mod_name}'
@@ -64,8 +60,6 @@ for mod_name in tracker_module_names:
                 api_trackers[tracker_code] = obj
             elif getattr(instance, 'is_other_api', False):
                 other_api_trackers[tracker_code] = obj
-
-
 
 class TRACKER_SETUP:
     def __init__(self, config):
@@ -889,7 +883,3 @@ class TRACKER_SETUP:
         match_found = any(results)
 
         return match_found
-
-
-
-
