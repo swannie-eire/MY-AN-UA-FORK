@@ -61,6 +61,7 @@ for mod_name in tracker_module_names:
             elif getattr(instance, 'is_other_api', False):
                 other_api_trackers[tracker_code] = obj
 
+
 class TRACKER_SETUP:
     def __init__(self, config):
         self.config = config
