@@ -29,6 +29,7 @@ class RTF():
         self.torrent_url = 'https://retroflix.club/browse/t/'
         self.forum_link = 'https://retroflix.club/forums.php?action=viewtopic&topicid=3619'
         self.banned_groups = []
+        self.is_other_api = True
         pass
 
     async def upload(self, meta, disctype):

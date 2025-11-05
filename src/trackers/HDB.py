@@ -29,6 +29,7 @@ class HDB():
         self.rehost_images = config['TRACKERS']['HDB'].get('img_rehost', True)
         self.signature = None
         self.banned_groups = [""]
+        self.is_http = True
 
     async def get_type_category_id(self, meta):
         cat_id = "EXIT"

@@ -44,6 +44,7 @@ class GPW():
             'img.pterclub.com': 'pterclub',
             'yes.ilikeshots.club': 'ilikeshots',
         }
+        self.is_other_api = True
 
     async def load_cookies(self, meta):
         cookie_file = os.path.abspath(f"{meta['base_dir']}/data/cookies/{self.tracker}.txt")

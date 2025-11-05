@@ -11,71 +11,60 @@ from data.config import config
 from datetime import datetime, timedelta
 from src.cleanup import cleanup, reset_terminal
 from src.console import console
-from src.trackers.COMMON import COMMON
 
-from src.trackers.ACM import ACM
-from src.trackers.AITHER import AITHER
-from src.trackers.AL import AL
-from src.trackers.ANT import ANT
-from src.trackers.AR import AR
-from src.trackers.ASC import ASC
-from src.trackers.AZ import AZ
-from src.trackers.BHD import BHD
-from src.trackers.BHDTV import BHDTV
-from src.trackers.BJS import BJS
-from src.trackers.BLU import BLU
-from src.trackers.BT import BT
-from src.trackers.CBR import CBR
-from src.trackers.CZ import CZ
-from src.trackers.DC import DC
-from src.trackers.DP import DP
-from src.trackers.FF import FF
-from src.trackers.FL import FL
-from src.trackers.FNP import FNP
-from src.trackers.FRIKI import FRIKI
-from src.trackers.GPW import GPW
-from src.trackers.HDB import HDB
-from src.trackers.HDS import HDS
-from src.trackers.HDT import HDT
-from src.trackers.HHD import HHD
-from src.trackers.HUNO import HUNO
-from src.trackers.IS import IS
-from src.trackers.ITT import ITT
-from src.trackers.LCD import LCD
-from src.trackers.LDU import LDU
-from src.trackers.LST import LST
-from src.trackers.LT import LT
-from src.trackers.MTV import MTV
-from src.trackers.NBL import NBL
-from src.trackers.OE import OE
-from src.trackers.OTW import OTW
-from src.trackers.PHD import PHD
-from src.trackers.PT import PT
-from src.trackers.PTER import PTER
-from src.trackers.PTP import PTP
-from src.trackers.PTS import PTS
-from src.trackers.PTT import PTT
-from src.trackers.R4E import R4E
-from src.trackers.RAS import RAS
-from src.trackers.RF import RF
-from src.trackers.RTF import RTF
-from src.trackers.SAM import SAM
-from src.trackers.SHRI import SHRI
-from src.trackers.SN import SN
-from src.trackers.SP import SP
-from src.trackers.SPD import SPD
-from src.trackers.STC import STC
-from src.trackers.THR import THR
-from src.trackers.TIK import TIK
-from src.trackers.TL import TL
-from src.trackers.TTG import TTG
-from src.trackers.TTR import TTR
-from src.trackers.TVC import TVC
-from src.trackers.ULCX import ULCX
-from src.trackers.UTP import UTP
-from src.trackers.YOINK import YOINK
-from src.trackers.YUS import YUS
-from src.trackers.EMUW import EMUW
+import importlib
+import os
+import inspect
+
+tracker_dir = os.path.join(os.path.dirname(__file__), 'trackers')
+tracker_module_names = [
+    f[:-3] for f in os.listdir(tracker_dir)
+    if f.endswith('.py') and f != '__init__.py'
+]
+
+tracker_class_map = {}
+http_trackers = {}
+api_trackers = {}
+other_api_trackers = {}
+
+import inspect
+
+for mod_name in tracker_module_names:
+    if mod_name == 'AVISTAZ_NETWORK' or mod_name == 'UNIT3D_TEMPLATE' or mod_name == 'UNIT3D' :
+        continue  # Skip this module entirely
+
+    full_mod_name = f'src.trackers.{mod_name}'
+    module = importlib.import_module(full_mod_name)
+
+    for name, obj in inspect.getmembers(module, inspect.isclass):
+        if obj.__module__ == full_mod_name:
+            # Determine __init__ parameters excluding 'self'
+            sig = inspect.signature(obj.__init__)
+            params = sig.parameters
+            # Prepare args for __init__
+            init_args = {}
+
+            # Example: config variable should be defined in your scope
+            if 'config' in params:
+                init_args['config'] = config
+
+            if 'tracker_name' in params:
+                # Provide a value for tracker_name, e.g., class name or tracker_code
+                init_args['tracker_name'] = name  # or some other appropriate string
+
+            # Instantiate with necessary args
+            instance = obj(**init_args)
+
+            tracker_code = getattr(instance, 'tracker', name).upper()
+            tracker_class_map[tracker_code] = obj
+
+            if getattr(instance, 'is_http', False):
+                http_trackers[tracker_code] = obj
+            elif getattr(instance, 'is_api', False):
+                api_trackers[tracker_code] = obj
+            elif getattr(instance, 'is_other_api', False):
+                other_api_trackers[tracker_code] = obj
+
 
 
 class TRACKER_SETUP:
@@ -240,7 +229,7 @@ class TRACKER_SETUP:
         if 'taoe' in group_tags:
             group_tags = 'taoe'
 
-        if tracker.upper() in ("AITHER", "LST", "SPD"):
+        if tracker.upper() in ("AITHER", "LST"):
             file_path = await self.get_banned_groups(meta, tracker)
             if file_path == "empty":
                 console.print(f"[bold red]No banned groups found for '{tracker}'.")
@@ -656,7 +645,7 @@ class TRACKER_SETUP:
                 return False
 
             # Initialize request log for this tracker
-            common = COMMON(config)
+            common = tracker_class_map.get('COMMON')(config)
             log_path = f"{meta['base_dir']}/tmp/{tracker}_request_results.json"
             if not await common.path_exists(log_path):
                 await common.makedirs(os.path.dirname(log_path))
@@ -902,23 +891,5 @@ class TRACKER_SETUP:
         return match_found
 
 
-tracker_class_map = {
-    'ACM': ACM, 'AITHER': AITHER, 'AL': AL, 'ANT': ANT, 'AR': AR, 'ASC': ASC, 'AZ': AZ, 'BHD': BHD, 'BHDTV': BHDTV, 'BJS': BJS, 'BLU': BLU, 'BT': BT, 'CBR': CBR,
-    'CZ': CZ, 'DC': DC, 'DP': DP, 'EMUW': EMUW, 'FNP': FNP, 'FF': FF, 'FL': FL, 'FRIKI': FRIKI, 'GPW': GPW, 'HDB': HDB, 'HDS': HDS, 'HDT': HDT, 'HHD': HHD, 'HUNO': HUNO, 'ITT': ITT,
-    'IS': IS, 'LCD': LCD, 'LDU': LDU, 'LST': LST, 'LT': LT, 'MTV': MTV, 'NBL': NBL, 'OE': OE, 'OTW': OTW, 'PHD': PHD, 'PT': PT, 'PTP': PTP, 'PTER': PTER, 'PTS': PTS, 'PTT': PTT,
-    'R4E': R4E, 'RAS': RAS, 'RF': RF, 'RTF': RTF, 'SAM': SAM, 'SHRI': SHRI, 'SN': SN, 'SP': SP, 'SPD': SPD, 'STC': STC, 'THR': THR,
-    'TIK': TIK, 'TL': TL, 'TVC': TVC, 'TTG': TTG, 'TTR': TTR, 'ULCX': ULCX, 'UTP': UTP, 'YOINK': YOINK, 'YUS': YUS
-}
 
-api_trackers = {
-    'ACM', 'AITHER', 'AL', 'BHD', 'BLU', 'CBR', 'DP', 'EMUW', 'FNP', 'FRIKI', 'HHD', 'HUNO', 'ITT', 'LCD', 'LDU', 'LST', 'LT',
-    'OE', 'OTW', 'PT', 'PTT', 'RAS', 'RF', 'R4E', 'SAM', 'SHRI', 'SP', 'STC', 'TIK', 'TTR', 'ULCX', 'UTP', 'YOINK', 'YUS'
-}
 
-other_api_trackers = {
-    'ANT', 'BHDTV', 'DC', 'GPW', 'NBL', 'RTF', 'SN', 'SPD', 'TL', 'TVC'
-}
-
-http_trackers = {
-    'AR', 'ASC', 'AZ', 'BJS', 'BT', 'CZ', 'FF', 'FL', 'HDB', 'HDS', 'HDT', 'IS', 'MTV', 'PHD', 'PTER', 'PTS', 'TTG'
-}

@@ -29,6 +29,7 @@ class PTER():
         self.ptgen_retry = 3
         self.signature = None
         self.banned_groups = [""]
+        self.is_http = True
 
     async def validate_credentials(self, meta):
         vcookie = await self.validate_cookies(meta)

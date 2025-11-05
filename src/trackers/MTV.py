@@ -45,6 +45,7 @@ class MTV():
             'TM', 'ViSiON',  # ViSiON: Xvid releases -- re-encoded
             'WAF', 'x0r', 'XS', 'YIFY', 'ZKBL', 'ZmN'
         ]
+        self.is_http = True
         pass
 
     # For loading

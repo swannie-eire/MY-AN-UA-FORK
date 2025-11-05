@@ -30,6 +30,7 @@ class SPD:
             'accept': 'application/json',
             'Authorization': self.config['TRACKERS'][self.tracker]['api_key'],
         }, timeout=30.0)
+        self.is_other_api = True
 
     async def get_cat_id(self, meta):
         if not meta.get('language_checked', False):

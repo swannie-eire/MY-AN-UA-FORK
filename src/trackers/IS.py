@@ -25,6 +25,7 @@ class IS:
         self.session = httpx.AsyncClient(headers={
             'User-Agent': f"Upload Assistant/2.3 ({platform.system()} {platform.release()})"
         }, timeout=30)
+        self.is_http = True
 
     async def validate_credentials(self, meta):
         self.session.cookies = await self.cookie_validator.load_session_cookies(meta, self.tracker)

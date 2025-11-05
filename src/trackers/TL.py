@@ -33,6 +33,7 @@ class TL:
         self.session.headers.update({
             'User-Agent': f'Upload Assistant ({platform.system()} {platform.release()})'
         })
+        self.is_other_api = True
 
     async def login(self, meta, force=False):
         if self.api_upload and not force:

@@ -33,6 +33,7 @@ class BT:
         self.session = httpx.AsyncClient(headers={
             'User-Agent': f'Upload Assistant ({platform.system()} {platform.release()})'
         }, timeout=60.0)
+        self.is_http = True
 
         target_site_ids = {
             'arabic': '22', 'bulgarian': '29', 'chinese': '14', 'croatian': '23',

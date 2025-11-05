@@ -20,6 +20,7 @@ class DC:
         self.session = httpx.AsyncClient(headers={
             'X-API-KEY': self.api_key
         }, timeout=30.0)
+        self.is_other_api = True
 
     async def mediainfo(self, meta):
         if meta.get('is_disc') == 'BDMV':

@@ -32,6 +32,7 @@ class ASC:
         self.session = httpx.AsyncClient(headers={
             'User-Agent': f'Upload Assistant ({platform.system()} {platform.release()})'
         }, timeout=60.0)
+        self.is_http = True
 
         self.language_map = {
             'bg': '15', 'da': '12',

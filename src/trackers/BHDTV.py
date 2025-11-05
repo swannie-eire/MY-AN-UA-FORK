@@ -27,6 +27,7 @@ class BHDTV():
         self.upload_url = 'https://www.bit-hdtv.com/takeupload.php'
         # self.forum_link = 'https://www.bit-hdtv.com/rules.php'
         self.banned_groups = []
+        self.is_other_api = True
         pass
 
     async def upload(self, meta, disctype):

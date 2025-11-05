@@ -28,6 +28,7 @@ class TTG():
 
         self.signature = None
         self.banned_groups = [""]
+        self.is_http = True
 
     async def edit_name(self, meta):
         ttg_name = meta['name']
