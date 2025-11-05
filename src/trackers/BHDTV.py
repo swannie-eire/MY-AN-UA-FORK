@@ -10,13 +10,8 @@ from pymediainfo import MediaInfo
 
 
 class BHDTV():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
+
+    is_other_api = True
 
     def __init__(self, config):
         self.config = config
@@ -27,7 +22,6 @@ class BHDTV():
         self.upload_url = 'https://www.bit-hdtv.com/takeupload.php'
         # self.forum_link = 'https://www.bit-hdtv.com/rules.php'
         self.banned_groups = []
-        self.is_other_api = True
         pass
 
     async def upload(self, meta, disctype):

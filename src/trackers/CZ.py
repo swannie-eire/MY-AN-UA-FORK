@@ -5,6 +5,9 @@ from src.trackers.AVISTAZ_NETWORK import AZTrackerBase
 
 
 class CZ(AZTrackerBase):
+
+    is_http = True
+
     def __init__(self, config):
         super().__init__(config, tracker_name='CZ')
         self.config = config
@@ -15,7 +18,6 @@ class CZ(AZTrackerBase):
         self.base_url = 'https://cinemaz.to'
         self.torrent_url = f'{self.base_url}/torrent/'
         self.requests_url = f'{self.base_url}/requests'
-        self.is_http = True
 
     async def rules(self, meta):
         warnings = []

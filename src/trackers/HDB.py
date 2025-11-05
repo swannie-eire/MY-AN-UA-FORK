@@ -20,6 +20,8 @@ from src.trackers.COMMON import COMMON
 
 class HDB():
 
+    is_http = True
+
     def __init__(self, config):
         self.config = config
         self.tracker = 'HDB'
@@ -29,7 +31,6 @@ class HDB():
         self.rehost_images = config['TRACKERS']['HDB'].get('img_rehost', True)
         self.signature = None
         self.banned_groups = [""]
-        self.is_http = True
 
     async def get_type_category_id(self, meta):
         cat_id = "EXIT"

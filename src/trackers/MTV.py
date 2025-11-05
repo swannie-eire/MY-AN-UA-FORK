@@ -20,13 +20,8 @@ from src.trackers.COMMON import COMMON
 
 
 class MTV():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
+
+    is_http = True
 
     def __init__(self, config):
         self.config = config
@@ -45,7 +40,6 @@ class MTV():
             'TM', 'ViSiON',  # ViSiON: Xvid releases -- re-encoded
             'WAF', 'x0r', 'XS', 'YIFY', 'ZKBL', 'ZmN'
         ]
-        self.is_http = True
         pass
 
     # For loading

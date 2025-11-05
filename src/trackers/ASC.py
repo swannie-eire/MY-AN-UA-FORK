@@ -17,6 +17,9 @@ from src.trackers.COMMON import COMMON
 
 
 class ASC:
+
+    is_http = True
+
     def __init__(self, config):
         self.config = config
         self.common = COMMON(config)
@@ -32,7 +35,6 @@ class ASC:
         self.session = httpx.AsyncClient(headers={
             'User-Agent': f'Upload Assistant ({platform.system()} {platform.release()})'
         }, timeout=60.0)
-        self.is_http = True
 
         self.language_map = {
             'bg': '15', 'da': '12',

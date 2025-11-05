@@ -15,13 +15,8 @@ from src.rehostimages import check_hosts
 
 
 class TVC():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
+
+    is_other_api = True
 
     def __init__(self, config):
         self.config = config
@@ -33,7 +28,6 @@ class TVC():
         self.signature = ""
         self.banned_groups = []
         tmdb.API_KEY = config['DEFAULT']['tmdb_api']
-        self.is_other_api = True
 
         pass
 

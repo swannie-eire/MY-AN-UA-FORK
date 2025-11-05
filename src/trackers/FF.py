@@ -16,6 +16,9 @@ from src.languages import process_desc_language
 
 
 class FF:
+
+    is_http = True
+
     def __init__(self, config):
         self.config = config
         self.cookie_validator = CookieValidator(config)
@@ -30,7 +33,6 @@ class FF:
         self.session = httpx.AsyncClient(headers={
             'User-Agent': f"Upload Assistant/2.3 ({platform.system()} {platform.release()})"
         }, timeout=30.0)
-        self.is_http = True
 
     async def validate_credentials(self, meta):
         cookie_file = os.path.abspath(f"{meta['base_dir']}/data/cookies/{self.tracker}.txt")

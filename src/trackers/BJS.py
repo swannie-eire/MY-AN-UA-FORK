@@ -26,6 +26,9 @@ from urllib.parse import urlparse
 
 
 class BJS:
+
+    is_http = True
+
     def __init__(self, config):
         self.config = config
         self.common = COMMON(config)
@@ -41,7 +44,6 @@ class BJS:
         self.session = httpx.AsyncClient(headers={
             'User-Agent': f'Upload Assistant ({platform.system()} {platform.release()})'
         }, timeout=60.0)
-        self.is_http = True
 
     async def get_additional_checks(self, meta):
         should_continue = True

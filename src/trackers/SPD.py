@@ -15,6 +15,9 @@ from src.languages import process_desc_language
 
 
 class SPD:
+
+    is_other_api = True
+
     def __init__(self, config):
         self.url = "https://speedapp.io"
         self.config = config
@@ -30,7 +33,6 @@ class SPD:
             'accept': 'application/json',
             'Authorization': self.config['TRACKERS'][self.tracker]['api_key'],
         }, timeout=30.0)
-        self.is_other_api = True
 
     async def get_cat_id(self, meta):
         if not meta.get('language_checked', False):

@@ -17,6 +17,9 @@ from pymediainfo import MediaInfo
 
 
 class AR():
+
+    is_http = True
+
     def __init__(self, config):
         self.config = config
         self.cookie_validator = CookieValidator(config)
@@ -33,7 +36,6 @@ class AR():
         self.torrent_url = f'{self.base_url}/torrents.php?id='
         self.user_agent = f'Upload Assistant/2.3 ({platform.system()} {platform.release()})'
         self.banned_groups = []
-        self.is_http = True
 
     async def get_type(self, meta):
         genres = f"{meta.get('keywords', '')} {meta.get('combined_genres', '')}"

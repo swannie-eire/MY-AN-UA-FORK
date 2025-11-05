@@ -17,6 +17,9 @@ from typing import Dict
 
 
 class GPW():
+
+    is_other_api = True
+
     def __init__(self, config):
         self.config = config
         self.common = COMMON(config)
@@ -44,7 +47,6 @@ class GPW():
             'img.pterclub.com': 'pterclub',
             'yes.ilikeshots.club': 'ilikeshots',
         }
-        self.is_other_api = True
 
     async def load_cookies(self, meta):
         cookie_file = os.path.abspath(f"{meta['base_dir']}/data/cookies/{self.tracker}.txt")

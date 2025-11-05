@@ -26,7 +26,7 @@ api_trackers = {}
 other_api_trackers = {}
 
 for mod_name in tracker_module_names:
-    if mod_name == 'AVISTAZ_NETWORK' or mod_name == 'UNIT3D_TEMPLATE' or mod_name == 'UNIT3D':
+    if mod_name in ('AVISTAZ_NETWORK', 'UNIT3D_TEMPLATE', 'UNIT3D'):
         continue  # Skip this module entirely
 
     full_mod_name = f'src.trackers.{mod_name}'
@@ -34,33 +34,15 @@ for mod_name in tracker_module_names:
 
     for name, obj in inspect.getmembers(module, inspect.isclass):
         if obj.__module__ == full_mod_name:
-            # Determine __init__ parameters excluding 'self'
-            sig = inspect.signature(obj.__init__)
-            params = sig.parameters
-            # Prepare args for __init__
-            init_args = {}
-
-            # Example: config variable should be defined in your scope
-            if 'config' in params:
-                init_args['config'] = config
-
-            if 'tracker_name' in params:
-                # Provide a value for tracker_name, e.g., class name or tracker_code
-                init_args['tracker_name'] = name  # or some other appropriate string
-
-            # Instantiate with necessary args
-            instance = obj(**init_args)
-
-            tracker_code = getattr(instance, 'tracker', name).upper()
+            tracker_code = getattr(obj, 'tracker', name).upper()
             tracker_class_map[tracker_code] = obj
 
-            if getattr(instance, 'is_http', False):
+            if getattr(obj, 'is_http', False):
                 http_trackers[tracker_code] = obj
-            elif getattr(instance, 'is_api', False):
+            elif getattr(obj, 'is_api', False):
                 api_trackers[tracker_code] = obj
-            elif getattr(instance, 'is_other_api', False):
+            elif getattr(obj, 'is_other_api', False):
                 other_api_trackers[tracker_code] = obj
-
 
 class TRACKER_SETUP:
     def __init__(self, config):

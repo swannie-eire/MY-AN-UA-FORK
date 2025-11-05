@@ -12,6 +12,9 @@ from src.trackers.COMMON import COMMON
 
 
 class TL:
+
+    is_other_api = True
+
     def __init__(self, config):
         self.config = config
         self.common = COMMON(config)
@@ -33,7 +36,6 @@ class TL:
         self.session.headers.update({
             'User-Agent': f'Upload Assistant ({platform.system()} {platform.release()})'
         })
-        self.is_other_api = True
 
     async def login(self, meta, force=False):
         if self.api_upload and not force:

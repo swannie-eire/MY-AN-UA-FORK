@@ -8,6 +8,9 @@ from src.trackers.COMMON import COMMON
 
 
 class DC:
+
+    is_other_api = True
+
     def __init__(self, config):
         self.config = config
         self.common = COMMON(config)
@@ -20,7 +23,6 @@ class DC:
         self.session = httpx.AsyncClient(headers={
             'X-API-KEY': self.api_key
         }, timeout=30.0)
-        self.is_other_api = True
 
     async def mediainfo(self, meta):
         if meta.get('is_disc') == 'BDMV':

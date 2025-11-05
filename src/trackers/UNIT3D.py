@@ -12,6 +12,8 @@ from src.trackers.COMMON import COMMON
 
 
 class UNIT3D:
+    is_api = True
+
     def __init__(self, config, tracker_name):
         self.config = config
         self.tracker = tracker_name
@@ -19,7 +21,6 @@ class UNIT3D:
         tracker_config = self.config['TRACKERS'].get(self.tracker, {})
         self.announce_url = tracker_config.get('announce_url', '')
         self.api_key = tracker_config.get('api_key', '')
-        self.is_api = True
         pass
 
     async def get_additional_checks(self, meta):

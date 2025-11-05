@@ -12,13 +12,8 @@ from src.console import console
 
 
 class RTF():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
+
+    is_other_api = True
 
     def __init__(self, config):
         self.config = config
@@ -29,7 +24,6 @@ class RTF():
         self.torrent_url = 'https://retroflix.club/browse/t/'
         self.forum_link = 'https://retroflix.club/forums.php?action=viewtopic&topicid=3619'
         self.banned_groups = []
-        self.is_other_api = True
         pass
 
     async def upload(self, meta, disctype):
