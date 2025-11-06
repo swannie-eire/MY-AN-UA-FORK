@@ -149,7 +149,7 @@ class TVC():
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         await self.get_tmdb_data(meta)
         if meta['category'] == 'TV':
-            if meta["original_language"] != "en":
+            if meta.get("original_language") != "en":
                 # setting category as foreign if original language is not english
                 cat_id = 43
             else:
