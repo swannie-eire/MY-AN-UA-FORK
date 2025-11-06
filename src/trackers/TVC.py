@@ -6,6 +6,8 @@ import traceback
 import cli_ui
 import os
 import tmdbsimple as tmdb
+import textwrap
+from datetime import datetime
 from src.bbcode import BBCODE
 import json
 import httpx
@@ -15,13 +17,8 @@ from src.rehostimages import check_hosts
 
 
 class TVC():
-    """
-    Edit for Tracker:
-        Edit BASE.torrent with announce and source
-        Check for duplicates
-        Set type/category IDs
-        Upload
-    """
+
+    is_other_api = True
 
     def __init__(self, config):
         self.config = config
@@ -34,23 +31,27 @@ class TVC():
         self.banned_groups = []
         tmdb.API_KEY = config['DEFAULT']['tmdb_api']
 
-        pass
+    def format_date_ddmmyyyy(self, date_str):
+        try:
+            return datetime.strptime(date_str, "%Y-%m-%d").strftime("%d-%m-%Y")
+        except (ValueError, TypeError):
+            return date_str
 
     async def get_cat_id(self, genres):
         # Note sections are based on Genre not type, source, resolution etc..
-        self.tv_types = ["comedy", "documentary", "drama", "entertainment", "factual", "foreign", "kids", "movies", "News", "radio", "reality", "soaps", "sci-fi", "sport", "holding bin"]
-        self.tv_types_ids = ["29", "5",            "11",   "14",            "19",      "42",      "32",    "44",    "45",    "51",   "52",      "30",     "33",    "42",    "53"]
+        tv_types = ["comedy", "documentary", "drama", "entertainment", "factual", "foreign", "kids", "movies", "News", "radio", "reality", "soaps", "sci-fi", "sport", "holding bin"]
+        tv_types_ids = ["29", "5",            "11",   "14",            "19",      "43",      "32",    "44",    "45",    "51",   "52",      "30",     "33",    "42",    "53"]
 
         genres = genres.split(', ')
         if len(genres) >= 1:
             for i in genres:
                 g = i.lower().replace(',', '')
-                for s in self.tv_types:
+                for s in tv_types:
                     if s.__contains__(g):
-                        return self.tv_types_ids[self.tv_types.index(s)]
+                        return tv_types_ids[tv_types.index(s)]
 
         # returning 14 as that is holding bin/misc
-        return self.tv_types_ids[14]
+        return tv_types_ids[14]
 
     async def get_res_id(self, tv_pack, resolution):
         if tv_pack:
@@ -148,13 +149,17 @@ class TVC():
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         await self.get_tmdb_data(meta)
         if meta['category'] == 'TV':
-            cat_id = await self.get_cat_id(meta['genres'])
+            if meta["original_language"] != "en":
+                # setting category as foreign if original language is not english
+                cat_id = 43
+            else:
+                cat_id = await self.get_cat_id(meta['genres'])
         else:
             cat_id = 44
         # type_id = await self.get_type_id(meta['type'])
         resolution_id = await self.get_res_id(meta['tv_pack'] if 'tv_pack' in meta else 0, meta['resolution'])
         # this is a different function that common function
-        await self.unit3d_edit_desc(meta, self.tracker, self.signature, image_list, approved_image_hosts=approved_image_hosts)
+        await self.unit3d_edit_desc(meta, self.tracker, self.signature, image_list)
 
         if meta['anon'] == 0 and not self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 0
@@ -195,7 +200,8 @@ class TVC():
                     tvc_name = f"{meta['title']} ({meta['year'] if 'season_air_first_date' and len(meta['season_air_first_date']) >= 4 else meta['season_air_first_date'][:4]}) Series {meta['season_int']} [{meta['resolution']} {type} {str(meta['video'][-3:]).upper()}]".replace("  ", " ").replace(' () ', ' ')
                 else:
                     if 'episode_airdate' in meta:
-                        tvc_name = f"{meta['title']} ({year}) {meta['season']}{meta['episode']} ({meta['episode_airdate']}) [{meta['resolution']} {type} {str(meta['video'][-3:]).upper()}]".replace("  ", " ").replace(' () ', ' ')
+                        formatted_date = self.format_date_ddmmyyyy(meta['episode_airdate'])
+                        tvc_name = f"{meta['title']} ({year}) {meta['season']}{meta['episode']} ({formatted_date}) [{meta['resolution']} {type} {str(meta['video'][-3:]).upper()}]".replace("  ", " ").replace(' () ', ' ')
                     else:
                         tvc_name = f"{meta['title']} ({year}) {meta['season']}{meta['episode']} [{meta['resolution']} {type} {str(meta['video'][-3:]).upper()}]".replace("  ", " ").replace(' () ', ' ')
 
@@ -322,7 +328,6 @@ class TVC():
                 if hasattr(tv, 'first_air_date'):
                     meta['first_air_date'] = tv.first_air_date
         except Exception:
-            console.print(traceback.print_exc())
             console.print(f"Unable to get episode information, Make sure episode {meta['season']}{meta['episode']} exists in TMDB. \nhttps://www.themoviedb.org/{meta['category'].lower()}/{meta['tmdb']}/season/{meta['season_int']}")
             meta['season_air_first_date'] = str({meta["year"]}) + "-N/A-N/A"
             meta['first_air_date'] = str({meta["year"]}) + "-N/A-N/A"
@@ -389,6 +394,13 @@ class TVC():
 
         return dupes
 
+    def format_description(self, description):
+        # adding line breaks around the 100 char limit to be line with the default format of the site
+        wrapped_lines = textwrap.wrap(description, width=100)
+        # Join wrapped lines with newline character
+        result = '\n'.join(wrapped_lines).strip()
+        return result
+
     async def unit3d_edit_desc(self, meta, tracker, signature, screens, comparison=False):
         base = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/DESCRIPTION.txt", 'r').read()
         with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{tracker}]DESCRIPTION.txt", 'w') as descfile:
@@ -427,21 +439,24 @@ class TVC():
                 channel = meta['networks'] if 'networks' in meta and meta['networks'] != "" else "N/A"
                 desc += "[color=green][size=25]Release Info[/size][/color]" + "\n\n"
                 desc += f"[color=orange][size=15]First episode of this season aired {meta['season_air_first_date']} on channel {channel}[/size][/color]" + "\n\n"
-            elif meta['category'] == "TV" and meta['tv_pack'] != 1 and 'episode_airdate' in meta:
-                channel = meta['networks'] if 'networks' in meta and meta['networks'] != "" else "N/A"
+            elif meta['category'] == "TV" and meta.get('tv_pack') != 1 and 'episode_airdate' in meta:
+                channel = meta.get('networks', 'N/A')
+                formatted_date = self.format_date_ddmmyyyy(meta['episode_airdate'])
                 desc += "[color=green][size=25]Release Info[/size][/color]" + "\n\n"
-                desc += f"[color=orange][size=15]Episode aired on channel {channel} on {meta['episode_airdate']}[/size][/color]" + "\n\n"
+                desc += f"[color=orange][size=15]Episode aired on channel {channel} on {formatted_date}[/size][/color]" + "\n\n"
             else:
                 desc += "[color=green][size=25]Release Info[/size][/color]" + "\n\n"
                 desc += "[color=orange][size=15]TMDB has No TV release info for this[/size][/color]" + "\n\n"
 
             if meta['category'] == 'TV' and meta['tv_pack'] != 1 and 'episode_overview' in meta:
-                desc += "\n\n" + "[color=green][size=25]PLOT[/size][/color]\n" + "Episode Name: " + str(meta['episode_name']) + "\n" + str(meta['episode_overview'] + "\n\n")
+                # episode overview
+                desc += "\n\n" + "[color=green][size=25]PLOT[/size][/color]\n" + "[b]Episode Name: [/b]" + str(meta['episode_name']) + "\n\n" + str(self.format_description(meta.get('episode_overview', ''))) + "\n\n"
             else:
-                desc += "[color=green][size=25]PLOT[/size][/color]" + "\n" + str(meta['overview'] + "\n\n")
+                # series overview
+                desc += "[color=green][size=25]PLOT[/size][/color]" + "\n" + str(self.format_description(meta.get('overview', ''))) + "\n\n"
             # Max two screenshots as per rules
             if len(base) > 2 and meta['description'] != "PTP":
-                desc += "[color=green][size=25]Notes/Extra Info[/size][/color]" + " \n \n" + str(base) + " \n \n "
+                desc += "[color=green][size=25]Notes/Extra Info[/size][/color]" + " \n \n" + str(base) + " \n \n"
             desc += self.get_links(meta, "[color=green][size=25]", "[/size][/COLOR]")
             desc = bbcode.convert_pre_to_code(desc)
             desc = bbcode.convert_hide_to_spoiler(desc)
@@ -451,12 +466,11 @@ class TVC():
             images = screens
             # using screen number in config to know how many screens to add. note max 2 is mentioned in rules.
             if len(images) > 0 and int(meta['screens']) >= self.config['TRACKERS'][self.tracker].get('image_count', 2):
-                descfile.write("[color=green][size=25]Screenshots[/size][/color]\n\n[center]")
+                descfile.write("[color=green][size=25]Screenshots[/size][/color]\n\n")
                 for each in range(len(images[:self.config['TRACKERS'][self.tracker]['image_count']])):
                     web_url = images[each]['web_url']
                     img_url = images[each]['img_url']
                     descfile.write(f"[url={web_url}][img=350]{img_url}[/img][/url]")
-                descfile.write("[/center]")
 
             if signature is not None:
                 descfile.write(signature)
@@ -476,7 +490,7 @@ class TVC():
             description += f" [URL=https://www.tvmaze.com/shows/{str(movie['tvmaze_id'])}][img]{self.config['IMAGES']['tvmaze_75']}[/img][/URL]"
         if movie['mal_id'] != 0:
             description += f" [URL=https://myanimelist.net/anime/{str(movie['mal_id'])}][img]{self.config['IMAGES']['mal_75']}[/img][/URL]"
-        return description + " \n \n "
+        return description + " \n \n"
 
     # get subs function
     # used in naming conventions
