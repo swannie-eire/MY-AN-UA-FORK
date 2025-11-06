@@ -197,7 +197,7 @@ class TVC():
             if meta['category'] == "TV":
                 if meta['tv_pack']:
                     # seasons called series here.
-                    tvc_name = f"{meta['title']} ({meta['year'] if 'season_air_first_date' and len(meta['season_air_first_date']) >= 4 else meta['season_air_first_date'][:4]}) Series {meta['season_int']} [{meta['resolution']} {type} {str(meta['video'][-3:]).upper()}]".replace("  ", " ").replace(' () ', ' ')
+                    tvc_name = f"{meta['title']} ({meta.get('season_air_first_date', '')[:4] if meta.get('season_air_first_date') and len(meta.get('season_air_first_date', '')) >= 4 else meta['year']}) Series {meta['season_int']} [{meta['resolution']} {type} {str(meta['video'][-3:]).upper()}]".replace("  ", " ").replace(' () ', ' ')
                 else:
                     if 'episode_airdate' in meta:
                         formatted_date = self.format_date_ddmmyyyy(meta['episode_airdate'])
@@ -448,7 +448,7 @@ class TVC():
                 desc += "[color=green][size=25]Release Info[/size][/color]" + "\n\n"
                 desc += "[color=orange][size=15]TMDB has No TV release info for this[/size][/color]" + "\n\n"
 
-            if meta['category'] == 'TV' and meta['tv_pack'] != 1 and 'episode_overview' in meta:
+            if meta['category'] == 'TV' and meta.get('tv_pack') != 1 and 'episode_overview' in meta:
                 # episode overview
                 desc += "\n\n" + "[color=green][size=25]PLOT[/size][/color]\n" + "[b]Episode Name: [/b]" + str(meta['episode_name']) + "\n\n" + str(self.format_description(meta.get('episode_overview', ''))) + "\n\n"
             else:
