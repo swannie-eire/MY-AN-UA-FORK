@@ -159,7 +159,7 @@ class TVC():
         # type_id = await self.get_type_id(meta['type'])
         resolution_id = await self.get_res_id(meta['tv_pack'] if 'tv_pack' in meta else 0, meta['resolution'])
         # this is a different function that common function
-        await self.unit3d_edit_desc(meta, self.tracker, self.signature, image_list)
+        await self.tvc_edit_desc(meta, self.tracker, self.signature, image_list)
 
         if meta['anon'] == 0 and not self.config['TRACKERS'][self.tracker].get('anon', False):
             anon = 0
@@ -401,7 +401,7 @@ class TVC():
         result = '\n'.join(wrapped_lines).strip()
         return result
 
-    async def unit3d_edit_desc(self, meta, tracker, signature, screens, comparison=False):
+    async def tvc_edit_desc(self, meta, tracker, signature, screens, comparison=False):
         base = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/DESCRIPTION.txt", 'r').read()
         with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{tracker}]DESCRIPTION.txt", 'w') as descfile:
             bbcode = BBCODE()
