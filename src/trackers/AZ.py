@@ -15,7 +15,6 @@ class AZ(AZTrackerBase):
         self.base_url = 'https://avistaz.to'
         self.torrent_url = f'{self.base_url}/torrent/'
         self.requests_url = f'{self.base_url}/requests'
-        self.is_http = True
 
     async def rules(self, meta):
         warnings = []
