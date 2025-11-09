@@ -13,8 +13,6 @@ from src.trackers.COMMON import COMMON
 
 class TL:
 
-    is_other_api = True
-
     def __init__(self, config):
         self.config = config
         self.common = COMMON(config)
@@ -428,3 +426,6 @@ class TL:
                 status_message = f'data error - {str(e)}'
 
             meta['tracker_status'][self.tracker]['status_message'] = status_message
+
+    # required for tracker type mapping
+    is_other_api = True

@@ -27,8 +27,6 @@ from urllib.parse import urlparse
 
 class BJS:
 
-    is_http = True
-
     def __init__(self, config):
         self.config = config
         self.common = COMMON(config)
@@ -1237,3 +1235,6 @@ class BJS:
             )
 
         return
+
+    # required for tracker type mapping
+    is_http = True

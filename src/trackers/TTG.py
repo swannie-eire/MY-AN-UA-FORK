@@ -15,8 +15,6 @@ from src.console import console
 
 class TTG():
 
-    is_http = True
-
     def __init__(self, config):
         self.config = config
         self.tracker = 'TTG'
@@ -352,3 +350,5 @@ class TTG():
         else:
             console.print("[red]There was an issue downloading the new .torrent from TTG")
             console.print(r.text)
+    # required for tracker type mapping
+    is_http = True

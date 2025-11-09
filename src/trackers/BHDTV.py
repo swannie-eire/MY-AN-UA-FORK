@@ -11,8 +11,6 @@ from pymediainfo import MediaInfo
 
 class BHDTV():
 
-    is_other_api = True
-
     def __init__(self, config):
         self.config = config
         self.tracker = 'BHDTV'
@@ -196,3 +194,6 @@ class BHDTV():
         console.print("[red]Dupes must be checked Manually")
         return ['Dupes must be checked Manually']
         # hopefully someone else has the time to implement this.
+
+    # required for tracker type mapping
+    is_other_api = True

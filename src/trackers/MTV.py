@@ -21,8 +21,6 @@ from src.trackers.COMMON import COMMON
 
 class MTV():
 
-    is_http = True
-
     def __init__(self, config):
         self.config = config
         self.tracker = 'MTV'
@@ -725,3 +723,6 @@ class MTV():
             await asyncio.sleep(5)
 
         return dupes
+
+    # required for tracker type mapping
+    is_http = True

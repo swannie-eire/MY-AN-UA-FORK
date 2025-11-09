@@ -5,8 +5,6 @@ from src.trackers.AVISTAZ_NETWORK import AZTrackerBase
 
 class AZ(AZTrackerBase):
 
-    is_http = True
-
     def __init__(self, config):
         super().__init__(config, tracker_name='AZ')
         self.config = config
@@ -178,3 +176,6 @@ class AZ(AZTrackerBase):
             return all_warnings
 
         return
+
+    # required for tracker type mapping
+    is_http = True

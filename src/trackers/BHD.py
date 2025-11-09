@@ -14,8 +14,6 @@ from src.rehostimages import check_hosts
 
 class BHD():
 
-    is_api = True
-
     def __init__(self, config):
         self.config = config
         self.tracker = 'BHD'
@@ -473,3 +471,6 @@ class BHD():
             name = name.replace(audio, f"{meta.get('video_codec')} {audio}")
         name = name.replace("DD+", "DDP")
         return name
+
+    # Does not inherit from super unit3d class so required for tracker type mapping
+    is_api = True

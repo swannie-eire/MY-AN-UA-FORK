@@ -9,8 +9,6 @@ from src.console import console
 
 class NBL():
 
-    is_other_api = True
-
     def __init__(self, config):
         self.config = config
         self.tracker = 'NBL'
@@ -154,3 +152,6 @@ class NBL():
             console.print_exception()
 
         return dupes
+
+    # required for tracker type mapping
+    is_other_api = True

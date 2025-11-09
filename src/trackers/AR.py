@@ -18,8 +18,6 @@ from pymediainfo import MediaInfo
 
 class AR():
 
-    is_http = True
-
     def __init__(self, config):
         self.config = config
         self.cookie_validator = CookieValidator(config)
@@ -450,3 +448,6 @@ class AR():
                 mediainfo_options={"inform": f"file://{template_path}"}
             )
         )
+
+    # required for tracker type mapping
+    is_http = True

@@ -14,8 +14,6 @@ from src.get_desc import DescriptionBuilder
 
 class IS:
 
-    is_http = True
-
     def __init__(self, config):
         self.config = config
         self.cookie_validator = CookieValidator(config)
@@ -299,3 +297,6 @@ class IS:
         )
 
         return
+
+    # required for tracker type mapping
+    is_http = True

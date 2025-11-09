@@ -16,8 +16,6 @@ from src.console import console
 
 class FL():
 
-    is_http = True
-
     def __init__(self, config):
         self.config = config
         self.tracker = 'FL'
@@ -375,3 +373,6 @@ class FL():
                     has_ro_audio = True
                     break
         return has_ro_audio, has_ro_sub
+
+    # required for tracker type mapping
+    is_http = True

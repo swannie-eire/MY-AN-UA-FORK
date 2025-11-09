@@ -18,8 +18,6 @@ from src.trackers.COMMON import COMMON
 
 class ASC:
 
-    is_http = True
-
     def __init__(self, config):
         self.config = config
         self.common = COMMON(config)
@@ -908,3 +906,6 @@ class ASC:
             except Exception as e:
                 console.print(f'{self.tracker}: [bold red]Error setting internal flag: {e}[/bold red]')
                 return
+
+    # required for tracker type mapping
+    is_http = True

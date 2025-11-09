@@ -13,8 +13,6 @@ from src.console import console
 
 class RTF():
 
-    is_other_api = True
-
     def __init__(self, config):
         self.config = config
         self.tracker = 'RTF'
@@ -235,3 +233,6 @@ class RTF():
 
         except Exception as e:
             console.print(f'[bold red]An unexpected error occurred: {str(e)}')
+
+    # required for tracker type mapping
+    is_other_api = True

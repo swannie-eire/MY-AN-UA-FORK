@@ -16,8 +16,6 @@ from src.rehostimages import check_hosts
 
 class TVC():
 
-    is_other_api = True
-
     def __init__(self, config):
         self.config = config
         self.tracker = 'TVC'
@@ -498,3 +496,6 @@ class TVC():
 
         return
     # get subs function^^^^
+
+    # required for tracker type mapping
+    is_other_api = True

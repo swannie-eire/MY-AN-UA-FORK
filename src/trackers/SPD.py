@@ -16,8 +16,6 @@ from src.languages import process_desc_language
 
 class SPD:
 
-    is_other_api = True
-
     def __init__(self, config):
         self.url = "https://speedapp.io"
         self.config = config
@@ -336,3 +334,6 @@ class SPD:
             status_message = "Debug mode enabled, not uploading."
 
         meta['tracker_status'][self.tracker]['status_message'] = status_message
+
+    # required for tracker type mapping
+    is_other_api = True

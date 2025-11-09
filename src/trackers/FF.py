@@ -17,8 +17,6 @@ from src.languages import process_desc_language
 
 class FF:
 
-    is_http = True
-
     def __init__(self, config):
         self.config = config
         self.cookie_validator = CookieValidator(config)
@@ -619,3 +617,6 @@ class FF:
         )
 
         return
+
+    # required for tracker type mapping
+    is_http = True

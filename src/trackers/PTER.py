@@ -16,8 +16,6 @@ from src.console import console
 
 class PTER():
 
-    is_http = True
-
     def __init__(self, config):
         self.config = config
         self.tracker = 'PTER'
@@ -409,3 +407,6 @@ class PTER():
         else:
             console.print("[red]There was an issue downloading the new .torrent from pter")
             console.print(r.text)
+
+    # required for tracker type mapping
+    is_http = True
