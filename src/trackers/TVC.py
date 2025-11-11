@@ -18,8 +18,6 @@ from src.rehostimages import check_hosts
 
 class TVC():
 
-    is_other_api = True
-
     def __init__(self, config):
         self.config = config
         self.tracker = 'TVC'
@@ -39,8 +37,9 @@ class TVC():
 
     async def get_cat_id(self, genres):
         # Note sections are based on Genre not type, source, resolution etc..
-        tv_types = ["comedy", "documentary", "drama", "entertainment", "factual", "foreign", "kids", "movies", "News", "radio", "reality", "soaps", "sci-fi", "sport", "holding bin"]
-        tv_types_ids = ["29", "5",            "11",   "14",            "19",      "43",      "32",    "44",    "45",    "51",   "52",      "30",     "33",    "42",    "53"]
+        tv_types = ["comedy", "documentary", "drama", "entertainment", "factual", "foreign", "kids", "movies", "News",
+                    "radio", "reality", "soaps", "sci-fi", "sport", "holding bin"]
+        tv_types_ids = ["29", "5", "11", "14", "19", "43", "32", "44", "45", "51", "52", "30", "33", "42", "53"]
 
         genres = genres.split(', ')
         if len(genres) >= 1:
@@ -140,7 +139,8 @@ class TVC():
         }
 
         approved_image_hosts = ['imgbb', 'ptpimg', 'imgbox', 'pixhost', 'bam', 'onlyimage']
-        await check_hosts(meta, self.tracker, url_host_mapping=url_host_mapping, img_host_index=1, approved_image_hosts=approved_image_hosts)
+        await check_hosts(meta, self.tracker, url_host_mapping=url_host_mapping, img_host_index=1,
+                          approved_image_hosts=approved_image_hosts)
         if 'TVC_images_key' in meta:
             image_list = meta['TVC_images_key']
         else:
@@ -149,7 +149,9 @@ class TVC():
         await common.edit_torrent(meta, self.tracker, self.source_flag)
         await self.get_tmdb_data(meta)
         if meta['category'] == 'TV':
-            if meta.get("original_language") != "en":
+            # if english and not irish, scottish or welsh
+            if str(meta.get("original_language")).__contains__('en') and meta.get(
+                    "original_language") not in "ga gd cy":
                 # setting category as foreign if original language is not english
                 cat_id = 43
             else:
@@ -176,7 +178,9 @@ class TVC():
         open_torrent = open(f"{meta['base_dir']}/tmp/{meta['uuid']}/[{self.tracker}].torrent", 'rb')
         files = {'torrent': open_torrent}
 
-        if meta['type'] == "ENCODE" and (str(meta['path']).lower().__contains__("bluray") or str(meta['path']).lower().__contains__("brrip") or str(meta['path']).lower().__contains__("bdrip")):
+        if meta['type'] == "ENCODE" and (
+                str(meta['path']).lower().__contains__("bluray") or str(meta['path']).lower().__contains__(
+                "brrip") or str(meta['path']).lower().__contains__("bdrip")):
             type = "BRRip"
         else:
             type = meta['type'].replace('WEBDL', 'WEB-DL')
@@ -194,16 +198,22 @@ class TVC():
             if meta.get('no_year', False) is True:
                 year = ''
 
+            if meta.get('hardcoded-subs'):
+                desc += "[color=red][size=20]Hardcoded subs[/size][/color]" + " \n \n"
+
             if meta['category'] == "TV":
                 if meta['tv_pack']:
                     # seasons called series here.
-                    tvc_name = f"{meta['title']} ({meta.get('season_air_first_date', '')[:4] if meta.get('season_air_first_date') and len(meta.get('season_air_first_date', '')) >= 4 else meta['year']}) Series {meta['season_int']} [{meta['resolution']} {type} {str(meta['video'][-3:]).upper()}]".replace("  ", " ").replace(' () ', ' ')
+                    tvc_name = f"{meta['title']} ({meta.get('season_air_first_date', '')[:4] if meta.get('season_air_first_date') and len(meta.get('season_air_first_date', '')) >= 4 else meta['year']}) Series {meta['season_int']} [{meta['resolution']} {type} {str(meta['video'][-3:]).upper()}]".replace(
+                        "  ", " ").replace(' () ', ' ')
                 else:
                     if 'episode_airdate' in meta:
                         formatted_date = self.format_date_ddmmyyyy(meta['episode_airdate'])
-                        tvc_name = f"{meta['title']} ({year}) {meta['season']}{meta['episode']} ({formatted_date}) [{meta['resolution']} {type} {str(meta['video'][-3:]).upper()}]".replace("  ", " ").replace(' () ', ' ')
+                        tvc_name = f"{meta['title']} ({year}) {meta['season']}{meta['episode']} ({formatted_date}) [{meta['resolution']} {type} {str(meta['video'][-3:]).upper()}]".replace(
+                            "  ", " ").replace(' () ', ' ')
                     else:
-                        tvc_name = f"{meta['title']} ({year}) {meta['season']}{meta['episode']} [{meta['resolution']} {type} {str(meta['video'][-3:]).upper()}]".replace("  ", " ").replace(' () ', ' ')
+                        tvc_name = f"{meta['title']} ({year}) {meta['season']}{meta['episode']} [{meta['resolution']} {type} {str(meta['video'][-3:]).upper()}]".replace(
+                            "  ", " ").replace(' () ', ' ')
 
         with open(f"{meta['base_dir']}/tmp/{meta['uuid']}/MediaInfo.json", 'r', encoding='utf-8') as f:
             mi = json.load(f)
@@ -222,7 +232,10 @@ class TVC():
             else:
                 tvc_name = tvc_name.replace(']', ' (SDH SUBS)]')
 
-        # appending country code.
+        if meta.get('hardcoded-subs'):
+            tvc_name = tvc_name.replace(']', ' HCSUBS]')
+
+            # appending country code.
         tvc_name = await self.append_country_code(meta, tvc_name)
 
         if meta.get('unattended', False) is False:
@@ -328,7 +341,8 @@ class TVC():
                 if hasattr(tv, 'first_air_date'):
                     meta['first_air_date'] = tv.first_air_date
         except Exception:
-            console.print(f"Unable to get episode information, Make sure episode {meta['season']}{meta['episode']} exists in TMDB. \nhttps://www.themoviedb.org/{meta['category'].lower()}/{meta['tmdb']}/season/{meta['season_int']}")
+            console.print(
+                f"Unable to get episode information, Make sure episode {meta['season']}{meta['episode']} exists in TMDB. \nhttps://www.themoviedb.org/{meta['category'].lower()}/{meta['tmdb']}/season/{meta['season_int']}")
             meta['season_air_first_date'] = str({meta["year"]}) + "-N/A-N/A"
             meta['first_air_date'] = str({meta["year"]}) + "-N/A-N/A"
 
@@ -358,7 +372,8 @@ class TVC():
         dupes = []
 
         # UHD, Discs, remux and non-1080p HEVC are not allowed on TVC.
-        if meta['resolution'] == '2160p' or (meta['is_disc'] or "REMUX" in meta['type']) or (meta['video_codec'] == 'HEVC' and meta['resolution'] != '1080p'):
+        if meta['resolution'] == '2160p' or (meta['is_disc'] or "REMUX" in meta['type']) or (
+                meta['video_codec'] == 'HEVC' and meta['resolution'] != '1080p'):
             console.print("[bold red]No UHD, Discs, Remuxes or non-1080p HEVC allowed at TVC[/bold red]")
             meta['skipping'] = "TVC"
             return []
@@ -413,11 +428,13 @@ class TVC():
                 if len(discs) >= 2:
                     for each in discs[1:]:
                         if each['type'] == "BDMV":
-                            descfile.write(f"[spoiler={each.get('name', 'BDINFO')}][code]{each['summary']}[/code][/spoiler]\n")
+                            descfile.write(
+                                f"[spoiler={each.get('name', 'BDINFO')}][code]{each['summary']}[/code][/spoiler]\n")
                             descfile.write("\n")
                         if each['type'] == "DVD":
                             descfile.write(f"{each['name']}:\n")
-                            descfile.write(f"[spoiler={os.path.basename(each['vob'])}][code][{each['vob_mi']}[/code][/spoiler] [spoiler={os.path.basename(each['ifo'])}][code][{each['ifo_mi']}[/code][/spoiler]\n")
+                            descfile.write(
+                                f"[spoiler={os.path.basename(each['vob'])}][code][{each['vob_mi']}[/code][/spoiler] [spoiler={os.path.basename(each['ifo'])}][code][{each['ifo_mi']}[/code][/spoiler]\n")
                             descfile.write("\n")
             desc = ""
 
@@ -429,7 +446,9 @@ class TVC():
                     for rd in cc['release_dates']:
                         if rd['type'] == 6:
                             channel = str(rd['note']) if str(rd['note']) != "" else "N/A Channel"
-                            rd_info += "[color=orange][size=15]" + cc['iso_3166_1'] + " TV Release info [/size][/color]" + "\n" + str(rd['release_date'])[:10] + " on " + channel + "\n"
+                            rd_info += "[color=orange][size=15]" + cc[
+                                'iso_3166_1'] + " TV Release info [/size][/color]" + "\n" + str(rd['release_date'])[
+                                                                                            :10] + " on " + channel + "\n"
             # movie release info adding
             if rd_info != "":
                 desc += "[color=green][size=25]Release Info[/size][/color]" + "\n\n"
@@ -450,13 +469,21 @@ class TVC():
 
             if meta['category'] == 'TV' and meta.get('tv_pack') != 1 and 'episode_overview' in meta:
                 # episode overview
-                desc += "\n\n" + "[color=green][size=25]PLOT[/size][/color]\n" + "[b]Episode Name: [/b]" + str(meta['episode_name']) + "\n\n" + str(self.format_description(meta.get('episode_overview', ''))) + "\n\n"
+                desc += "\n\n" + "[color=green][size=25]PLOT[/size][/color]\n" + "[b]Episode Name: [/b]" + str(
+                    meta['episode_name']) + "\n\n" + str(
+                    self.format_description(meta.get('episode_overview', ''))) + "\n\n"
             else:
                 # series overview
-                desc += "[color=green][size=25]PLOT[/size][/color]" + "\n" + str(self.format_description(meta.get('overview', ''))) + "\n\n"
+                desc += "[color=green][size=25]PLOT[/size][/color]" + "\n" + str(
+                    self.format_description(meta.get('overview', ''))) + "\n\n"
             # Max two screenshots as per rules
             if len(base) > 2 and meta['description'] != "PTP":
                 desc += "[color=green][size=25]Notes/Extra Info[/size][/color]" + " \n \n" + str(base) + " \n \n"
+            if meta.get('hardcoded-subs'):
+                if desc.__contains__("Notes/Extra Info"):
+                    desc += "[color=red][size=20]Hardcoded subs[/size][/color]" + " \n \n"
+                else:
+                    desc += "[color=green][size=25]Notes/Extra Info[/size][/color]" + " \n \n" + "[color=red][size=20]Hardcoded subs[/size][/color]" + " \n \n"
             desc += self.get_links(meta, "[color=green][size=25]", "[/size][/COLOR]")
             desc = bbcode.convert_pre_to_code(desc)
             desc = bbcode.convert_hide_to_spoiler(desc)
@@ -516,4 +543,7 @@ class TVC():
                             meta['sdh_subs'] = 1
 
         return
+
     # get subs function^^^^
+
+    is_other_api = True
