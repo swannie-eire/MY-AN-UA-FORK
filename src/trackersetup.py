@@ -14,36 +14,6 @@ from datetime import datetime, timedelta
 from src.cleanup import cleanup, reset_terminal
 from src.console import console
 
-tracker_dir = os.path.join(os.path.dirname(__file__), 'trackers')
-tracker_module_names = [
-    f[:-3] for f in os.listdir(tracker_dir)
-    if f.endswith('.py') and f != '__init__.py'
-]
-
-tracker_class_map = {}
-http_trackers = {}
-api_trackers = {}
-other_api_trackers = {}
-
-for mod_name in tracker_module_names:
-    if mod_name in ('AVISTAZ_NETWORK', 'UNIT3D_TEMPLATE', 'UNIT3D'):
-        continue  # Skip this module entirely
-
-    full_mod_name = f'src.trackers.{mod_name}'
-    module = importlib.import_module(full_mod_name)
-
-    for name, obj in inspect.getmembers(module, inspect.isclass):
-        if obj.__module__ == full_mod_name:
-            tracker_code = getattr(obj, 'tracker', name).upper()
-            tracker_class_map[tracker_code] = obj
-
-            if getattr(obj, 'is_http', False):
-                http_trackers[tracker_code] = obj
-            elif getattr(obj, 'is_api', False):
-                api_trackers[tracker_code] = obj
-            elif getattr(obj, 'is_other_api', False):
-                other_api_trackers[tracker_code] = obj
-
 
 class TRACKER_SETUP:
     def __init__(self, config):
@@ -867,3 +837,34 @@ class TRACKER_SETUP:
         match_found = any(results)
 
         return match_found
+
+
+tracker_dir = os.path.join(os.path.dirname(__file__), 'trackers')
+tracker_module_names = [
+    f[:-3] for f in os.listdir(tracker_dir)
+    if f.endswith('.py') and f != '__init__.py'
+]
+
+tracker_class_map = {}
+http_trackers = {}
+api_trackers = {}
+other_api_trackers = {}
+
+for mod_name in tracker_module_names:
+    if mod_name in ('AVISTAZ_NETWORK', 'UNIT3D_TEMPLATE', 'UNIT3D'):
+        continue  # Skip this module entirely
+
+    full_mod_name = f'src.trackers.{mod_name}'
+    module = importlib.import_module(full_mod_name)
+
+    for name, obj in inspect.getmembers(module, inspect.isclass):
+        if obj.__module__ == full_mod_name:
+            tracker_code = getattr(obj, 'tracker', name).upper()
+            tracker_class_map[tracker_code] = obj
+
+            if getattr(obj, 'is_http', False):
+                http_trackers[tracker_code] = obj
+            elif getattr(obj, 'is_api', False):
+                api_trackers[tracker_code] = obj
+            elif getattr(obj, 'is_other_api', False):
+                other_api_trackers[tracker_code] = obj
